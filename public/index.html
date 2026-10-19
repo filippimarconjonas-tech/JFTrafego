@@ -22,16 +22,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Google tag (gtag.js) - Google Ads -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16462418511"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'AW-16462418511');
-</script>
-<!-- Os eventos "lead_form_open" e "generate_lead" vão para o GTM (dataLayer), a tag do Google (gtag) e o Meta Pixel (fbq), se existir. -->
+<!-- A tag do Google Ads (AW-16462418511) e a conversão "Lead Formulário LP IA" são carregadas pelo GTM.
+     Os eventos "lead_form_open" e "generate_lead" vão para o dataLayer (acionadores de Evento personalizado no GTM). -->
 
 <style>
 :root{
@@ -843,9 +835,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var CONFIG = {
     whatsapp: '5548984550552',
     // Endpoint que grava os leads no CRM (/admin).
-    webhookUrl: '/api/leads',
-    // Conversão de lead no Google Ads: 'AW-16462418511/ROTULO'. Vazio = não envia conversão.
-    adsConversion: ''
+    webhookUrl: '/api/leads'
   };
 
   var SERVICOS = {
@@ -873,10 +863,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // GTM: acionador de "Evento personalizado" com o nome do evento (lead_form_open / generate_lead).
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(Object.assign({event:event}, data||{}));
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', event, data||{});
-      if (event === 'generate_lead' && CONFIG.adsConversion) window.gtag('event', 'conversion', {send_to: CONFIG.adsConversion});
-    }
     if (typeof window.fbq === 'function') {
       if (event === 'generate_lead') window.fbq('track','Lead', data||{});
       if (event === 'lead_form_open') window.fbq('trackCustom','LeadFormOpen', data||{});
