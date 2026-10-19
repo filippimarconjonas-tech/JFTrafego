@@ -1,7 +1,19 @@
 {
   "name": "jftrafego",
+  "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
   "assets": {
-    "directory": "./public"
-  }
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "jftrafego-crm",
+      "database_id": "f7b6cea0-e8da-42f3-82ba-8513693b745e"
+    }
+  ],
+  "observability": { "enabled": true }
+  // A senha do /admin fica no secret ADMIN_PASSWORD (Cloudflare > Workers > jftrafego > Settings > Variables and Secrets).
 }

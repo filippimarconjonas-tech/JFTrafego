@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "echo \"Site estático em ./public - nada para compilar\"",
+    "build": "echo \"Nada para compilar: site em ./public e Worker em ./src\"",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.2"
   }
 }

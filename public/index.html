@@ -702,6 +702,16 @@ section{padding:88px 0}
               <option value="nao-sei">Ainda não sei</option>
             </select><span class="err">Selecione uma opção.</span></div>
         </div>
+        <div class="field"><label for="f-fat">Faturamento mensal aproximado</label>
+          <select id="f-fat" name="faturamento" required>
+            <option value="">Selecione</option>
+            <option>Até R$ 10 mil</option>
+            <option>R$ 10 mil a R$ 30 mil</option>
+            <option>R$ 30 mil a R$ 100 mil</option>
+            <option>R$ 100 mil a R$ 500 mil</option>
+            <option>Acima de R$ 500 mil</option>
+            <option>Prefiro não informar</option>
+          </select><span class="err">Selecione uma opção.</span></div>
         <div class="field"><label for="f-msg">Mensagem (opcional)</label><textarea id="f-msg" name="mensagem" placeholder="Conte um pouco sobre sua empresa e seus objetivos"></textarea></div>
         <label class="consent"><input type="checkbox" name="consent" required> <span>Concordo em ser contatado e com o tratamento dos meus dados conforme a <a href="#privacidade">Política de Privacidade</a>.</span></label>
         <button class="btn btn-primary" type="submit" style="width:100%">Quero meu diagnóstico gratuito</button>
@@ -812,8 +822,8 @@ section{padding:88px 0}
   // ===== Configuração =====
   var CONFIG = {
     whatsapp: '5548984550552',
-    // URL para enviar os leads (CRM, Google Sheets via Apps Script, Make, Zapier, n8n...). Deixe vazio para não enviar.
-    webhookUrl: ''
+    // Endpoint que grava os leads no CRM (/admin).
+    webhookUrl: '/api/leads'
   };
 
   var SERVICOS = {
@@ -1006,13 +1016,14 @@ section{padding:88px 0}
     var servico = SERVICOS[d.get('servico')] || d.get('servico');
     var lead = {
       origem: 'formulario-rodape', nome: d.get('nome'), whatsapp: d.get('whatsapp'), email: d.get('email'),
-      empresa: d.get('empresa'), servico: servico, mensagem: d.get('mensagem')
+      empresa: d.get('empresa'), servico: servico, faturamento: d.get('faturamento'), mensagem: d.get('mensagem')
     };
     sendLead(lead);
     track('generate_lead', {origem: lead.origem, servico: lead.servico});
     var msg = 'Olá, Jonas! Preenchi o formulário do site.\n\n' +
       '*Nome:* ' + lead.nome + '\n' +
       '*Empresa/segmento:* ' + lead.empresa + '\n' +
+      '*Faturamento mensal:* ' + lead.faturamento + '\n' +
       '*Interesse:* ' + servico + (lead.mensagem ? '\n*Mensagem:* ' + lead.mensagem : '');
     document.getElementById('footerOkWa').href = waLink(msg);
     ff.style.display = 'none';
