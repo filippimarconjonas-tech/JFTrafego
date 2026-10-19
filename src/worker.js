@@ -94,6 +94,8 @@ export function canalDe(d) {
   if (d.gclid || d.gbraid || d.wbraid || (/google|adwords|gads/.test(src) && (pago || !med))) return 'google_ads';
   if (d.fbclid || (pago && /facebook|instagram|meta|^fb$|^ig$/.test(src))) return 'meta_ads';
   if (/facebook|instagram|meta|^fb$|^ig$/.test(src)) return med ? 'social' : 'meta_ads';
+  if (/meu-negocio|^gmn$|google-business|maps/.test(src)) return 'organico';
+  if (med === 'link' && !/facebook|instagram|meta|^fb$|^ig$|linkedin|tiktok|youtube/.test(src)) return 'link_whatsapp';
   if (src) return pago ? 'outros_ads' : 'referencia';
   if (/(^|\.)(google|bing|yahoo|duckduckgo|ecosia)\./.test(ref)) return 'organico';
   if (/(^|\.)(facebook|instagram|linkedin|tiktok|youtube|t\.co|twitter|x)\./.test(ref) || /^(l\.)?(facebook|instagram)\.com$/.test(ref)) return 'social';
@@ -522,6 +524,10 @@ export default {
     if (url.pathname.startsWith('/api/')) {
       try { return await api(request, env, url); }
       catch (e) { console.error(e); return json({ error: 'Erro interno' }, 500); }
+    }
+    // Links curtos: /whatsapp/instagram, /whatsapp/cartao... servem a mesma página.
+    if (/^\/whatsapp\/[a-z0-9-]{1,40}\/?$/i.test(url.pathname)) {
+      return env.ASSETS.fetch(new Request(new URL('/whatsapp/', url), request));
     }
     const res = await env.ASSETS.fetch(request);
     if (url.pathname.startsWith('/admin')) {
