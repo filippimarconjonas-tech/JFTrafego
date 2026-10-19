@@ -124,6 +124,7 @@ tbody tr:hover{background:#f8fbff}
 .timeline{display:grid;gap:10px}
 .ev{border-left:3px solid var(--line);padding:2px 0 2px 12px}
 .ev.nota{border-color:var(--blue)}
+.ev.whatsapp{border-color:var(--green)}
 .ev small{color:var(--muted);font-size:.75rem}
 .ev p{white-space:pre-wrap}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -518,7 +519,7 @@ tbody tr:hover{background:#f8fbff}
         '</div></div>' +
         (utm.length || l.page ? '<div class="sec"><h3>Origem do tráfego</h3><dl class="kv">' + utm.map(function(k){ return '<dt>'+k+'</dt><dd>'+esc(l[k])+'</dd>'; }).join('') + (l.referrer ? '<dt>referrer</dt><dd>'+esc(l.referrer)+'</dd>' : '') + '</dl></div>' : '') +
         '<div class="sec"><h3>Anotações e histórico</h3><form id="notaForm"><textarea class="in" name="texto" placeholder="Ex.: Liguei, pediu proposta até sexta..."></textarea><div class="actions" style="margin-top:8px;justify-content:flex-end"><button class="btn sm" type="submit">Adicionar nota</button></div></form>' +
-          '<div class="timeline" style="margin-top:14px">' + eventos.map(function(e){ return '<div class="ev '+e.tipo+'"><small>'+dataBR(e.created_at.slice(0,16))+' · '+({nota:'Nota',etapa:'Etapa',criado:'Criado',formulario:'Formulário',qualificacao:'Qualificação',call_em:'Call',followup_em:'Follow-up'}[e.tipo]||e.tipo)+'</small><p>'+esc(e.texto)+'</p></div>'; }).join('') + '</div></div>' +
+          '<div class="timeline" style="margin-top:14px">' + eventos.map(function(e){ return '<div class="ev '+e.tipo+'"><small>'+dataBR(e.created_at.slice(0,16))+' · '+({nota:'Nota',etapa:'Etapa',criado:'Criado',formulario:'Formulário',qualificacao:'Qualificação',call_em:'Call',followup_em:'Follow-up',whatsapp:'WhatsApp'}[e.tipo]||e.tipo)+'</small><p>'+esc(e.texto)+'</p></div>'; }).join('') + '</div></div>' +
         '<div class="sec"><button class="btn danger sm" type="button" data-del>Excluir lead</button></div>' +
       '</div>';
   }
@@ -572,7 +573,7 @@ tbody tr:hover{background:#f8fbff}
   });
 
   // ===== Painel =====
-  var CANAIS = {google_ads:'Google Ads', meta_ads:'Meta Ads', outros_ads:'Outros anúncios', organico:'Busca orgânica', social:'Redes sociais', referencia:'Outros sites', direto:'Direto'};
+  var CANAIS = {google_ads:'Google Ads', meta_ads:'Meta Ads', outros_ads:'Outros anúncios', whatsapp:'WhatsApp direto', organico:'Busca orgânica', social:'Redes sociais', referencia:'Outros sites', direto:'Direto'};
   var PAGOS = ['google_ads','meta_ads','outros_ads'];
   var FUNIL = [
     {id:'novo', nome:'Leads'}, {id:'contato', nome:'Em contato'}, {id:'call_agendada', nome:'Call agendada'},

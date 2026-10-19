@@ -39,6 +39,7 @@ const SCHEMA = [
     dia TEXT NOT NULL, canal TEXT NOT NULL, campanha TEXT NOT NULL DEFAULT '', n INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (dia, canal, campanha)
   )`,
+  `CREATE TABLE IF NOT EXISTS wa_msgs (id TEXT PRIMARY KEY, ts INTEGER NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS investimentos (
     mes TEXT NOT NULL, canal TEXT NOT NULL, valor REAL NOT NULL DEFAULT 0,
     PRIMARY KEY (mes, canal)
@@ -84,6 +85,7 @@ export function qualificar(lead) {
 // ===== Canal de origem =====
 // Classifica visita/lead em: google_ads, meta_ads, outros_ads, organico, social, referencia, direto.
 export function canalDe(d) {
+  if (d.origem === 'whatsapp') return 'whatsapp';
   const src = String(d.utm_source || '').toLowerCase();
   const med = String(d.utm_medium || '').toLowerCase();
   let ref = '';
@@ -198,6 +200,96 @@ async function registrarVisita(request, env) {
   await env.DB.prepare(`INSERT INTO visitas_dia (dia, canal, campanha, n) VALUES (?, ?, ?, 1)
     ON CONFLICT (dia, canal, campanha) DO UPDATE SET n = n + 1`).bind(hojeBR(), canal, campanha).run();
   return new Response(null, { status: 204 });
+}
+
+// ===== WhatsApp (Cloud API / parceiro oficial) =====
+// Cada mensagem recebida cria o lead (ou registra no lead existente com o mesmo número).
+
+// wa_id brasileiro pode vir sem o 9º dígito (55 48 9999-1111); normaliza para DDD + 9 dígitos.
+export function telefoneBR(waId) {
+  let d = String(waId || '').replace(/\D/g, '');
+  if (d.startsWith('55') && d.length >= 12) d = d.slice(2);
+  if (d.length === 10 && /[6-9]/.test(d[2])) d = d.slice(0, 2) + '9' + d.slice(2);
+  return d.slice(-11);
+}
+const formatarTel = d => d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d;
+
+function textoMensagem(m) {
+  if (m.type === 'text') return m.text && m.text.body;
+  if (m.type === 'button') return m.button && m.button.text;
+  if (m.type === 'interactive') return (m.interactive && (m.interactive.button_reply || m.interactive.list_reply) || {}).title;
+  return { image: '[imagem]', audio: '[áudio]', video: '[vídeo]', document: '[documento]', sticker: '[figurinha]', location: '[localização]', contacts: '[contato]', reaction: '[reação]' }[m.type] || '[' + m.type + ']';
+}
+
+async function whatsappWebhook(request, env, url) {
+  // Verificação do webhook (Meta envia GET com hub.challenge).
+  if (request.method === 'GET') {
+    const ok = env.WHATSAPP_VERIFY_TOKEN && url.searchParams.get('hub.mode') === 'subscribe' &&
+      safeEqual(await hmac('cmp', url.searchParams.get('hub.verify_token') || ''), await hmac('cmp', env.WHATSAPP_VERIFY_TOKEN));
+    return ok ? new Response(url.searchParams.get('hub.challenge') || '', { status: 200 }) : new Response('Forbidden', { status: 403 });
+  }
+
+  const raw = await request.text();
+  // Autenticação: assinatura da Meta (WHATSAPP_APP_SECRET) ou ?token= igual ao WHATSAPP_VERIFY_TOKEN (parceiros sem assinatura).
+  if (env.WHATSAPP_APP_SECRET) {
+    const sig = (request.headers.get('x-hub-signature-256') || '').replace('sha256=', '');
+    if (!sig || !safeEqual(sig, await hmac(env.WHATSAPP_APP_SECRET, raw))) return new Response('Forbidden', { status: 403 });
+  } else if (!env.WHATSAPP_VERIFY_TOKEN || !safeEqual(await hmac('cmp', url.searchParams.get('token') || ''), await hmac('cmp', env.WHATSAPP_VERIFY_TOKEN))) {
+    return new Response('Forbidden', { status: 403 });
+  }
+
+  let body;
+  try { body = JSON.parse(raw); } catch { return new Response('ok'); }
+  for (const entry of body.entry || []) {
+    for (const change of entry.changes || []) {
+      const v = change.value || {};
+      const nomes = Object.fromEntries((v.contacts || []).map(c => [c.wa_id, c.profile && c.profile.name]));
+      for (const m of v.messages || []) {
+        try { await registrarMensagem(env, m, nomes[m.from]); } catch (e) { console.error('whatsapp', e); }
+      }
+    }
+  }
+  return new Response('ok');
+}
+
+async function registrarMensagem(env, m, nomePerfil) {
+  if (!m.id || !m.from) return;
+  // Idempotência: a Meta pode reenviar o mesmo evento.
+  const ins = await env.DB.prepare(`INSERT OR IGNORE INTO wa_msgs (id, ts) VALUES (?, ?)`).bind(m.id, Date.now()).run();
+  if (!ins.meta.changes) return;
+
+  const tel = telefoneBR(m.from);
+  const texto = clip(textoMensagem(m), 1000) || '';
+  const ts = now();
+  const ref = m.referral || null; // Anúncio de clique para WhatsApp (Meta Ads)
+  const existente = await env.DB.prepare(`SELECT id FROM leads WHERE telefone_digitos = ? ORDER BY id DESC LIMIT 1`).bind(tel).first();
+
+  if (existente) {
+    // Registra no histórico, no máximo 1 evento a cada 30 min por lead (evita encher a timeline).
+    const ultimo = await env.DB.prepare(`SELECT created_at FROM eventos WHERE lead_id = ? AND tipo = 'whatsapp' ORDER BY id DESC LIMIT 1`).bind(existente.id).first();
+    if (!ultimo || Date.now() - Date.parse(ultimo.created_at) > 30 * 60e3) {
+      await env.DB.batch([
+        env.DB.prepare(`INSERT INTO eventos (lead_id, created_at, tipo, texto) VALUES (?, ?, 'whatsapp', ?)`).bind(existente.id, ts, 'Mensagem recebida no WhatsApp: ' + texto),
+        env.DB.prepare(`UPDATE leads SET updated_at = ? WHERE id = ?`).bind(ts, existente.id)
+      ]);
+    }
+    return;
+  }
+
+  const lead = {
+    nome: clip(nomePerfil, 120) || formatarTel(tel), whatsapp: formatarTel(tel), telefone_digitos: tel,
+    mensagem: texto, origem: ref ? 'anuncio-whatsapp' : 'whatsapp',
+    utm_source: ref ? 'meta' : null, utm_medium: ref ? 'paid_ctwa' : null,
+    utm_campaign: ref ? clip(ref.headline, 120) : null, utm_content: ref ? clip(ref.source_id, 120) : null,
+    referrer: ref ? clip(ref.source_url, 500) : null
+  };
+  const cols = Object.keys(lead);
+  const res = await env.DB.prepare(
+    `INSERT INTO leads (${cols.join(', ')}, created_at, updated_at, qualificacao, qualificacao_auto, qualificacao_motivo, quente, etapa)
+     VALUES (${cols.map(() => '?').join(', ')}, ?, ?, 'N', 'N', ?, 0, 'novo')`
+  ).bind(...cols.map(c => lead[c]), ts, ts, 'Contato direto pelo WhatsApp, sem formulário').run();
+  await env.DB.prepare(`INSERT INTO eventos (lead_id, created_at, tipo, texto) VALUES (?, ?, 'whatsapp', ?)`)
+    .bind(res.meta.last_row_id, ts, (ref ? 'Chegou por anúncio de clique para WhatsApp. ' : 'Chamou direto no WhatsApp. ') + 'Primeira mensagem: ' + texto).run();
 }
 
 async function login(request, env) {
@@ -387,6 +479,7 @@ async function api(request, env, url) {
 
   if (path === '/api/leads' && method === 'POST') return criarLead(request, env);
   if (path === '/api/visita' && method === 'POST') return registrarVisita(request, env);
+  if (path === '/api/whatsapp/webhook') return whatsappWebhook(request, env, url);
   if (path === '/api/login' && method === 'POST') return login(request, env);
   if (path === '/api/logout' && method === 'POST') {
     return json({ ok: true }, 200, { 'set-cookie': `${COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0` });
