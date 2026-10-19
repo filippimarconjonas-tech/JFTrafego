@@ -850,7 +850,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var tracking = {};
   try {
     var params = new URLSearchParams(location.search);
-    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'].forEach(function(k){
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid','fbclid'].forEach(function(k){
       var v = params.get(k);
       if (v) { tracking[k] = v; try{ sessionStorage.setItem('jf_'+k, v); }catch(e){} }
       else { try{ var s = sessionStorage.getItem('jf_'+k); if (s) tracking[k] = s; }catch(e){} }
@@ -858,6 +858,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   } catch(e){}
   tracking.page = location.href.split('?')[0];
   tracking.referrer = document.referrer || '';
+
+  // Conta 1 visita por sessão para o painel do CRM (anônima, sem cookies).
+  try {
+    if (!sessionStorage.getItem('jf_visita')) {
+      sessionStorage.setItem('jf_visita', '1');
+      var vb = JSON.stringify(tracking);
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/visita', new Blob([vb], {type:'text/plain'}));
+      else fetch('/api/visita', {method:'POST', body:vb, keepalive:true});
+    }
+  } catch(e){}
 
   function track(event, data){
     // GTM: acionador de "Evento personalizado" com o nome do evento (lead_form_open / generate_lead).

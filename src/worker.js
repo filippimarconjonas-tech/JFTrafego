@@ -34,7 +34,15 @@ const SCHEMA = [
     texto TEXT
   )`,
   `CREATE INDEX IF NOT EXISTS idx_eventos_lead ON eventos(lead_id)`,
-  `CREATE TABLE IF NOT EXISTS login_tentativas (ip TEXT NOT NULL, ts INTEGER NOT NULL)`
+  `CREATE TABLE IF NOT EXISTS login_tentativas (ip TEXT NOT NULL, ts INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS visitas_dia (
+    dia TEXT NOT NULL, canal TEXT NOT NULL, campanha TEXT NOT NULL DEFAULT '', n INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (dia, canal, campanha)
+  )`,
+  `CREATE TABLE IF NOT EXISTS investimentos (
+    mes TEXT NOT NULL, canal TEXT NOT NULL, valor REAL NOT NULL DEFAULT 0,
+    PRIMARY KEY (mes, canal)
+  )`
 ];
 
 let schemaReady = null;
@@ -72,6 +80,25 @@ export function qualificar(lead) {
   }
   return { classe: 'N', motivo: 'Sem dados de faturamento ou investimento' };
 }
+
+// ===== Canal de origem =====
+// Classifica visita/lead em: google_ads, meta_ads, outros_ads, organico, social, referencia, direto.
+export function canalDe(d) {
+  const src = String(d.utm_source || '').toLowerCase();
+  const med = String(d.utm_medium || '').toLowerCase();
+  let ref = '';
+  try { ref = d.referrer ? new URL(d.referrer).hostname.toLowerCase() : ''; } catch {}
+  const pago = /cpc|ppc|paid|ads?$|display|pmax/.test(med);
+  if (d.gclid || d.gbraid || d.wbraid || (/google|adwords|gads/.test(src) && (pago || !med))) return 'google_ads';
+  if (d.fbclid || (pago && /facebook|instagram|meta|^fb$|^ig$/.test(src))) return 'meta_ads';
+  if (/facebook|instagram|meta|^fb$|^ig$/.test(src)) return med ? 'social' : 'meta_ads';
+  if (src) return pago ? 'outros_ads' : 'referencia';
+  if (/(^|\.)(google|bing|yahoo|duckduckgo|ecosia)\./.test(ref)) return 'organico';
+  if (/(^|\.)(facebook|instagram|linkedin|tiktok|youtube|t\.co|twitter|x)\./.test(ref) || /^(l\.)?(facebook|instagram)\.com$/.test(ref)) return 'social';
+  if (ref && !/workers\.dev$|jftrafego/.test(ref)) return 'referencia';
+  return 'direto';
+}
+const hojeBR = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); // America/Sao_Paulo (UTC-3)
 
 // ===== Utilidades =====
 const now = () => new Date().toISOString();
@@ -159,6 +186,18 @@ async function criarLead(request, env) {
   await env.DB.prepare(`INSERT INTO eventos (lead_id, created_at, tipo, texto) VALUES (?, ?, 'criado', ?)`)
     .bind(id, ts, `Lead criado pelo ${lead.origem || 'site'}. Qualificação automática: ${q.classe} (${q.motivo})`).run();
   return json({ ok: true, id, qualificacao: q.classe });
+}
+
+async function registrarVisita(request, env) {
+  const ua = request.headers.get('user-agent') || '';
+  if (!ua || /bot|crawl|spider|slurp|preview|lighthouse|headless|monitor/i.test(ua)) return new Response(null, { status: 204 });
+  let d = {};
+  try { d = JSON.parse(await request.text()); } catch {}
+  const canal = canalDe(d);
+  const campanha = clip(d.utm_campaign, 120) || '';
+  await env.DB.prepare(`INSERT INTO visitas_dia (dia, canal, campanha, n) VALUES (?, ?, ?, 1)
+    ON CONFLICT (dia, canal, campanha) DO UPDATE SET n = n + 1`).bind(hojeBR(), canal, campanha).run();
+  return new Response(null, { status: 204 });
 }
 
 async function login(request, env) {
@@ -286,6 +325,45 @@ async function adicionarNota(request, env, id) {
   return detalheLead(env, id);
 }
 
+async function painel(env, url) {
+  const de = url.searchParams.get('de'), ate = url.searchParams.get('ate');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(de || '') || !/^\d{4}-\d{2}-\d{2}$/.test(ate || '')) return json({ error: 'Período inválido' }, 400);
+  // created_at é UTC; o dia do lead é calculado em UTC-3 no navegador, então buscamos com 1 dia de folga.
+  const ini = new Date(Date.parse(de + 'T00:00:00Z') - 864e5).toISOString();
+  const fim = new Date(Date.parse(ate + 'T00:00:00Z') + 2 * 864e5).toISOString();
+  const [leads, visitas, inv, ev] = await env.DB.batch([
+    env.DB.prepare(`SELECT id, created_at, qualificacao, etapa, valor, utm_source, utm_medium, utm_campaign, gclid, fbclid, referrer, origem
+      FROM leads WHERE created_at >= ? AND created_at < ?`).bind(ini, fim),
+    env.DB.prepare(`SELECT dia, canal, campanha, n FROM visitas_dia WHERE dia >= ? AND dia <= ?`).bind(de, ate),
+    env.DB.prepare(`SELECT mes, canal, valor FROM investimentos ORDER BY mes DESC`),
+    env.DB.prepare(`SELECT lead_id, texto FROM eventos WHERE tipo = 'etapa' AND lead_id IN (SELECT id FROM leads WHERE created_at >= ? AND created_at < ?)`).bind(ini, fim)
+  ]);
+  // Maior etapa já alcançada por lead (a partir do histórico), para o funil.
+  const nomeParaId = Object.fromEntries(Object.entries(ETAPA_NOME).map(([k, v]) => [v, k]));
+  const alcancou = {};
+  for (const e of ev.results) {
+    const m = String(e.texto).match(/→ (.+)$/);
+    if (m && nomeParaId[m[1]]) (alcancou[e.lead_id] = alcancou[e.lead_id] || []).push(nomeParaId[m[1]]);
+  }
+  return json({
+    leads: leads.results.map(l => ({ id: l.id, created_at: l.created_at, qualificacao: l.qualificacao, etapa: l.etapa, valor: l.valor,
+      campanha: l.utm_campaign || '', canal: canalDe(l), etapas: alcancou[l.id] || [] })),
+    visitas: visitas.results,
+    investimentos: inv.results
+  });
+}
+
+async function salvarInvestimento(request, env) {
+  let b;
+  try { b = await request.json(); } catch { return json({ error: 'JSON inválido' }, 400); }
+  if (!/^\d{4}-\d{2}$/.test(b.mes || '') || !['google_ads', 'meta_ads', 'outros_ads'].includes(b.canal)) return json({ error: 'Dados inválidos' }, 400);
+  const valor = Math.max(0, Number(b.valor) || 0);
+  await env.DB.prepare(`INSERT INTO investimentos (mes, canal, valor) VALUES (?, ?, ?) ON CONFLICT (mes, canal) DO UPDATE SET valor = excluded.valor`)
+    .bind(b.mes, b.canal, valor).run();
+  const { results } = await env.DB.prepare(`SELECT mes, canal, valor FROM investimentos ORDER BY mes DESC`).all();
+  return json({ investimentos: results });
+}
+
 async function exportarCsv(env) {
   const { results } = await env.DB.prepare(`SELECT * FROM leads ORDER BY created_at DESC`).all();
   const cols = ['id', 'created_at', 'nome', 'whatsapp', 'email', 'empresa', 'segmento', 'servico', 'faturamento', 'investimento',
@@ -308,6 +386,7 @@ async function api(request, env, url) {
   await ensureSchema(env);
 
   if (path === '/api/leads' && method === 'POST') return criarLead(request, env);
+  if (path === '/api/visita' && method === 'POST') return registrarVisita(request, env);
   if (path === '/api/login' && method === 'POST') return login(request, env);
   if (path === '/api/logout' && method === 'POST') {
     return json({ ok: true }, 200, { 'set-cookie': `${COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0` });
@@ -324,6 +403,8 @@ async function api(request, env, url) {
   if (path === '/api/admin/leads' && method === 'GET') return listarLeads(env);
   if (path === '/api/admin/leads' && method === 'POST') return criarLeadManual(request, env);
   if (path === '/api/admin/leads.csv' && method === 'GET') return exportarCsv(env);
+  if (path === '/api/admin/painel' && method === 'GET') return painel(env, url);
+  if (path === '/api/admin/investimentos' && method === 'PUT') return salvarInvestimento(request, env);
 
   const m = path.match(/^\/api\/admin\/leads\/(\d+)(\/notas)?$/);
   if (m) {
