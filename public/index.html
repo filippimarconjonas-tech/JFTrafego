@@ -15,7 +15,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Cole aqui o Google Tag Manager / Meta Pixel. Os eventos "lead_form_open" e "generate_lead" são enviados ao dataLayer e ao fbq (se existir). -->
+<!-- Google tag (gtag.js) - Google Ads -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16462418511"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-16462418511');
+</script>
+<!-- Os eventos "lead_form_open" e "generate_lead" vão para a tag do Google (gtag) e para o Meta Pixel (fbq), se existir. -->
 
 <style>
 :root{
@@ -823,7 +832,9 @@ section{padding:88px 0}
   var CONFIG = {
     whatsapp: '5548984550552',
     // Endpoint que grava os leads no CRM (/admin).
-    webhookUrl: '/api/leads'
+    webhookUrl: '/api/leads',
+    // Conversão de lead no Google Ads: 'AW-16462418511/ROTULO'. Vazio = não envia conversão.
+    adsConversion: ''
   };
 
   var SERVICOS = {
@@ -848,8 +859,10 @@ section{padding:88px 0}
   tracking.referrer = document.referrer || '';
 
   function track(event, data){
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(Object.assign({event:event}, data||{}));
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, data||{});
+      if (event === 'generate_lead' && CONFIG.adsConversion) window.gtag('event', 'conversion', {send_to: CONFIG.adsConversion});
+    }
     if (typeof window.fbq === 'function') {
       if (event === 'generate_lead') window.fbq('track','Lead', data||{});
       if (event === 'lead_form_open') window.fbq('trackCustom','LeadFormOpen', data||{});
