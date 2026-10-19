@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PZ89LTND');</script>
+<!-- End Google Tag Manager -->
 <title>JF Tráfego | Tráfego Pago, Landing Pages e CRM</title>
 <meta name="description" content="Gestão de tráfego pago (Google Ads e Meta Ads), criação de landing pages com ou sem CRM e automação de atendimento para gerar mais clientes e vendas.">
 <meta name="theme-color" content="#1a9cf0">
@@ -24,7 +31,7 @@
 
   gtag('config', 'AW-16462418511');
 </script>
-<!-- Os eventos "lead_form_open" e "generate_lead" vão para a tag do Google (gtag) e para o Meta Pixel (fbq), se existir. -->
+<!-- Os eventos "lead_form_open" e "generate_lead" vão para o GTM (dataLayer), a tag do Google (gtag) e o Meta Pixel (fbq), se existir. -->
 
 <style>
 :root{
@@ -346,6 +353,10 @@ section{padding:88px 0}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PZ89LTND"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- Ícones SVG -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -859,6 +870,9 @@ section{padding:88px 0}
   tracking.referrer = document.referrer || '';
 
   function track(event, data){
+    // GTM: acionador de "Evento personalizado" com o nome do evento (lead_form_open / generate_lead).
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(Object.assign({event:event}, data||{}));
     if (typeof window.gtag === 'function') {
       window.gtag('event', event, data||{});
       if (event === 'generate_lead' && CONFIG.adsConversion) window.gtag('event', 'conversion', {send_to: CONFIG.adsConversion});
