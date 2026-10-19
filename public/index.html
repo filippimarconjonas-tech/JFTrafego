@@ -106,12 +106,27 @@ section{padding:88px 0}
 .platforms .container{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:space-between}
 .platforms p{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;max-width:220px;opacity:.9}
 .platforms ul{list-style:none;display:flex;gap:12px;flex-wrap:wrap}
-.platforms li{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:8px 16px;border-radius:999px;font-weight:700;font-size:.92rem}
+.platforms li{background:#fff;border-radius:10px;height:48px;padding:0 10px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(11,60,110,.15)}
+.platforms li img{height:40px;width:auto}
+.platforms li.gmn{gap:8px;padding:0 14px;color:#5f6368;font-weight:700;font-size:.92rem;white-space:nowrap}
+.platforms li.gmn svg{width:26px;height:26px}
 
 /* Dores */
 .pain .container{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
-.pain-list{list-style:none;display:grid;gap:14px}
-.pain-list li{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.pain .container{grid-template-columns:.9fr 1.1fr}
+.photo-wrap{position:relative;padding:0 24px}
+.photo{border-radius:28px;overflow:hidden;background:var(--grad);aspect-ratio:9/10;box-shadow:var(--shadow-lg)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.notif{position:absolute;display:flex;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 14px 34px rgba(15,27,45,.16);font-size:.85rem;animation:float 4s ease-in-out infinite}
+.notif span{width:34px;height:34px;border-radius:10px;background:var(--blue-50);display:grid;place-items:center;flex:none}
+.notif b{display:block;line-height:1.2}
+.notif small{color:var(--green-700);font-weight:600}
+.notif.n1{top:12%;left:0}
+.notif.n2{top:44%;right:0;animation-delay:1.2s}
+.notif.n3{bottom:10%;left:4%;animation-delay:2.4s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.pain-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.pain-list li{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:#fff;border:1px solid var(--line)}
 .pain-list li::before{content:"✕";flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#ffecec;color:#e5484d;font-weight:800;font-size:.85rem}
 .pain-list li b{display:block}
 .pain-list li span{color:var(--muted);font-size:.93rem}
@@ -155,17 +170,18 @@ section{padding:88px 0}
 .why{background:var(--grad);color:#fff;position:relative;overflow:hidden}
 .why .eyebrow{color:#d6efff}
 .why .lead{color:rgba(255,255,255,.9)}
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.why-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.why-photo{border-radius:28px;overflow:hidden;aspect-ratio:9/10;background:rgba(255,255,255,.12);box-shadow:0 30px 60px rgba(5,40,80,.3)}
+.why-photo img{width:100%;height:100%;object-fit:cover}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
 .why-item{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:var(--radius);padding:24px}
 .why-item h3{font-size:1.05rem;margin-bottom:6px}
 .why-item p{font-size:.93rem;color:rgba(255,255,255,.88)}
 
 /* Sobre */
 .about .container{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:center}
-.about-photo{aspect-ratio:4/5;border-radius:24px;background:var(--grad);position:relative;overflow:hidden;display:grid;place-items:center;box-shadow:var(--shadow-lg)}
-.about-photo img{width:100%;height:100%;object-fit:cover}
-.about-photo .ph{color:#fff;text-align:center;padding:24px;font-weight:600;opacity:.9}
-.about-photo .ph img{width:120px;height:120px;margin:0 auto 14px;filter:brightness(0) invert(1)}
+.about-photo{position:relative}
+.about-photo img{position:relative;width:100%;height:auto}
 .creds{list-style:none;display:grid;gap:10px;margin:22px 0 28px}
 .creds li{display:flex;gap:12px;align-items:center;font-weight:600}
 .creds li::before{content:"✓";width:24px;height:24px;flex:none;border-radius:50%;background:var(--blue-50);color:var(--blue-600);display:grid;place-items:center;font-size:.75rem;font-weight:800}
@@ -182,7 +198,7 @@ section{padding:88px 0}
 
 /* Faixa CTA */
 .cta-band{padding:72px 0}
-.cta-box{background:var(--ink);color:#fff;border-radius:28px;padding:56px;display:grid;grid-template-columns:1.4fr auto;gap:32px;align-items:center;position:relative;overflow:hidden}
+.cta-box{background:linear-gradient(90deg,rgba(15,27,45,.94) 0%,rgba(15,27,45,.8) 55%,rgba(11,127,209,.55) 100%),url("https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=60") center/cover,var(--ink);color:#fff;border-radius:28px;padding:56px;display:grid;grid-template-columns:1.4fr auto;gap:32px;align-items:center;position:relative;overflow:hidden}
 .cta-box::after{content:"";position:absolute;right:-80px;bottom:-120px;width:360px;height:360px;border-radius:50%;background:var(--grad);opacity:.35}
 .cta-box h2{margin-bottom:10px}
 .cta-box p{color:rgba(255,255,255,.8)}
@@ -242,8 +258,6 @@ section{padding:88px 0}
 .wa-float:hover .tip{opacity:1;transform:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
 
-/* Barra fixa mobile */
-.mobile-bar{display:none}
 
 /* Modal */
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,27,45,.6);backdrop-filter:blur(4px)}
@@ -274,8 +288,9 @@ section{padding:88px 0}
 /* Responsivo */
 @media (max-width:980px){
   .nav{display:none}
-  .hero .container,.pain .container,.about .container,.contact .container{grid-template-columns:1fr;gap:40px}
-  .grid-3,.plans,.why-grid{grid-template-columns:1fr 1fr}
+  .hero .container,.pain .container,.about .container,.contact .container,.why-wrap{grid-template-columns:1fr;gap:40px}
+  .photo-wrap,.why-photo{max-width:480px;margin:0 auto;width:100%}
+  .grid-3,.plans{grid-template-columns:1fr 1fr}
   .steps{grid-template-columns:1fr 1fr}
   .cta-box{grid-template-columns:1fr;padding:40px 28px}
   .about-photo{max-width:420px}
@@ -295,10 +310,14 @@ section{padding:88px 0}
   .modal-head{padding:22px 20px 0}
   .progress{margin:16px 20px 0}
   .modal form{padding:18px 20px 22px}
-  .wa-float{display:none}
-  .mobile-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(15,27,45,.08)}
-  .mobile-bar .btn{width:100%;padding:14px}
-  body{padding-bottom:76px}
+  .wa-float{width:56px;height:56px;right:16px;bottom:16px}
+  .wa-float .tip{display:none}
+  .pain-list{grid-template-columns:1fr}
+  .photo-wrap{padding:0 8px}
+  .notif{font-size:.78rem;padding:8px 10px}
+  .platforms ul{gap:8px}
+  .platforms li{height:42px}
+  .platforms li img{height:34px}
 }
 </style>
 </head>
@@ -343,7 +362,7 @@ section{padding:88px 0}
   <div class="container">
     <div>
       <div class="badge"><i></i> Atendimento online para todo o Brasil</div>
-      <h1>Mais clientes chegando no seu <span class="hl">WhatsApp</span> todos os dias, com tráfego pago que dá resultado</h1>
+      <h1><span class="hl">Mais Clientes, Mais Vendas &amp; Mais Lucro:</span> Anuncie na Internet e aumente seu Faturamento</h1>
       <p class="lead">Gestão de anúncios no Google e Meta, landing pages que convertem e CRM para sua equipe não perder nenhum contato. Tudo para transformar cliques em clientes e aumentar o faturamento da sua empresa.</p>
       <div class="hero-ctas">
         <button class="btn btn-wa" data-lead="hero" type="button"><svg aria-hidden="true"><use href="#i-wa"/></svg>Quero um diagnóstico gratuito</button>
@@ -371,7 +390,11 @@ section{padding:88px 0}
   <div class="container">
     <p>As maiores ferramentas trabalhando para você</p>
     <ul>
-      <li>Google Ads</li><li>Meta Ads</li><li>Instagram</li><li>Facebook</li><li>YouTube</li><li>Google Meu Negócio</li>
+      <li><img src="assets/logo-instagram.webp" alt="Instagram" width="186" height="56" loading="lazy"></li>
+      <li><img src="assets/logo-facebook.webp" alt="Facebook" width="186" height="56" loading="lazy"></li>
+      <li><img src="assets/logo-google.webp" alt="Google" width="186" height="56" loading="lazy"></li>
+      <li><img src="assets/logo-youtube.webp" alt="YouTube" width="186" height="56" loading="lazy"></li>
+      <li class="gmn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285f4" d="M3.273 1.636c-.736 0-1.363.492-1.568 1.16L0 9.272c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.65 1.35 3 3 3 1.664 0 3-1.336 3-3 0 1.664 1.336 3 3 3s3-1.336 3-3l-1.705-6.476a1.646 1.646 0 00-1.568-1.16zm8.729 9.326c-.604 1.063-1.703 1.81-3.002 1.81-1.304 0-2.398-.747-3-1.806-.604 1.06-1.702 1.806-3 1.806-.484 0-.944-.1-1.363-.277v8.232c0 .9.736 1.637 1.636 1.637h17.454c.9 0 1.636-.737 1.636-1.637v-8.232a3.48 3.48 0 01-1.363.277c-1.304 0-2.398-.746-3-1.804-.602 1.058-1.696 1.804-3 1.804-1.299 0-2.394-.75-2.998-1.81zm5.725 3.765c.808 0 1.488.298 2.007.782l-.859.859a1.623 1.623 0 00-1.148-.447c-.98 0-1.772.827-1.772 1.806 0 .98.792 1.807 1.772 1.807.882 0 1.485-.501 1.615-1.191h-1.615v-1.16h2.826c.035.196.054.4.054.613 0 1.714-1.147 2.931-2.88 2.931a3 3 0 010-6z"/></svg><span>Google Meu Negócio</span></li>
     </ul>
   </div>
 </div>
@@ -379,18 +402,25 @@ section{padding:88px 0}
 <!-- DORES -->
 <section class="pain">
   <div class="container">
+    <div class="photo-wrap reveal">
+      <div class="photo"><img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&amp;fit=crop&amp;w=900&amp;h=1000&amp;q=70" alt="Pessoa usando o celular" loading="lazy" onerror="this.remove()"></div>
+      <div class="notif n1"><span>💬</span><div><b>Novo contato no WhatsApp</b><small>Quero um orçamento!</small></div></div>
+      <div class="notif n2"><span>🛒</span><div><b>Novo pedido no site</b><small>agora mesmo</small></div></div>
+      <div class="notif n3"><span>📞</span><div><b>Nova ligação</b><small>via Google Meu Negócio</small></div></div>
+    </div>
     <div class="reveal">
-      <span class="eyebrow">Você se identifica?</span>
+      <span class="eyebrow">Aumente suas vendas</span>
       <h2>Você está perdendo vendas porque as pessoas não te encontram</h2>
       <p class="lead">Seus clientes estão pesquisando agora no Google e rolando o Instagram. A pergunta é: eles estão encontrando a sua empresa ou a do concorrente?</p>
+      <ul class="pain-list">
+        <li><div><b>Depende só de indicação</b><span>Tem mês bom e mês ruim, sem previsibilidade de faturamento.</span></div></li>
+        <li><div><b>Já impulsionou e não viu retorno</b><span>Gastou com anúncios mas os contatos não viraram clientes.</span></div></li>
+        <li><div><b>O site não gera contatos</b><span>Recebe visitas, mas ninguém pede orçamento.</span></div></li>
+        <li><div><b>Leads se perdem no WhatsApp</b><span>Sem CRM, ninguém sabe quem foi atendido, quem respondeu e quem fechou.</span></div></li>
+      </ul>
       <p class="pain-answer">Anunciar na internet é a forma mais rápida e mensurável de colocar sua empresa na frente de quem já quer comprar.</p>
+      <button class="btn btn-wa" data-lead="dores" type="button" style="margin-top:24px"><svg aria-hidden="true"><use href="#i-wa"/></svg>Me chame agora mesmo</button>
     </div>
-    <ul class="pain-list reveal">
-      <li><div><b>Depende só de indicação</b><span>Tem mês bom e mês ruim, sem previsibilidade de faturamento.</span></div></li>
-      <li><div><b>Já impulsionou e não viu retorno</b><span>Gastou com anúncios mas os contatos não viraram clientes.</span></div></li>
-      <li><div><b>O site não gera contatos</b><span>Recebe visitas, mas ninguém pede orçamento.</span></div></li>
-      <li><div><b>Leads se perdem no WhatsApp</b><span>Sem CRM, ninguém sabe quem foi atendido, quem respondeu e quem fechou.</span></div></li>
-    </ul>
   </div>
 </section>
 
@@ -515,21 +545,28 @@ section{padding:88px 0}
       <div class="step reveal"><h3>Estrutura no ar</h3><p>Criamos a landing page, configuramos rastreamento, CRM e publicamos as campanhas.</p></div>
       <div class="step reveal"><h3>Otimização e escala</h3><p>Acompanhamos os números, cortamos o que não funciona e investimos no que traz venda.</p></div>
     </div>
+    <div class="center" style="margin-top:40px">
+      <button class="btn btn-wa" data-lead="como-funciona" type="button"><svg aria-hidden="true"><use href="#i-wa"/></svg>Quero começar pelo diagnóstico gratuito</button>
+    </div>
   </div>
 </section>
 
 <!-- DIFERENCIAIS -->
 <section class="why">
   <div class="container">
-    <div class="section-head reveal" style="margin-bottom:0">
-      <span class="eyebrow">Por que a JF Tráfego</span>
-      <h2>Foco no que importa: clientes e faturamento</h2>
-      <p class="lead">Curtidas não pagam boletos. Nosso trabalho é medido pelo número de contatos qualificados e vendas que chegam até você.</p>
-    </div>
-    <div class="why-grid">
-      <div class="why-item reveal"><h3>Atendimento direto</h3><p>Você fala com quem cuida das suas campanhas, sem intermediários.</p></div>
-      <div class="why-item reveal"><h3>Transparência total</h3><p>As contas de anúncio ficam no seu nome e você acompanha cada real investido.</p></div>
-      <div class="why-item reveal"><h3>Estratégia completa</h3><p>Anúncio, página e CRM trabalhando juntos, e não peças soltas.</p></div>
+    <div class="why-wrap">
+      <div class="reveal">
+        <span class="eyebrow">Por que a JF Tráfego</span>
+        <h2>Foco no que importa: clientes e faturamento</h2>
+        <p class="lead">Curtidas não pagam boletos. Nosso trabalho é medido pelo número de contatos qualificados e vendas que chegam até você.</p>
+        <div class="why-grid">
+          <div class="why-item"><h3>Atendimento direto</h3><p>Você fala com quem cuida das suas campanhas, sem intermediários.</p></div>
+          <div class="why-item"><h3>Transparência total</h3><p>As contas de anúncio ficam no seu nome e você acompanha cada real investido.</p></div>
+          <div class="why-item"><h3>Estratégia completa</h3><p>Anúncio, página e CRM trabalhando juntos, e não peças soltas.</p></div>
+        </div>
+        <button class="btn btn-white" data-lead="diferenciais" type="button" style="margin-top:28px"><svg aria-hidden="true"><use href="#i-wa"/></svg>Quero mais clientes</button>
+      </div>
+      <div class="why-photo reveal"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&amp;fit=crop&amp;w=900&amp;h=1000&amp;q=70" alt="Notebook com gráficos de resultados de campanhas" loading="lazy" onerror="this.remove()"></div>
     </div>
   </div>
 </section>
@@ -538,8 +575,7 @@ section{padding:88px 0}
 <section class="about">
   <div class="container">
     <div class="about-photo reveal">
-      <!-- Substitua pelo retrato: <img src="assets/jonas.webp" alt="Jonas Filippi"> -->
-      <div class="ph"><img src="assets/logo-jf.webp" alt="">Jonas Filippi<br><small>Gestor de Tráfego</small></div>
+      <img src="assets/jonas-filippi.webp" alt="Jonas Filippi, gestor de tráfego" width="513" height="400" loading="lazy">
     </div>
     <div class="reveal">
       <span class="eyebrow">Quem sou eu</span>
@@ -574,6 +610,10 @@ section{padding:88px 0}
       <details><summary>Como funciona o atendimento?</summary><p>O atendimento é feito de forma online, pelo WhatsApp e por reuniões de acompanhamento. Você tem contato direto com quem cuida da sua conta.</p></details>
       <details><summary>Mais visitas significa mais vendas?</summary><p>Não necessariamente. Por isso trabalhamos o anúncio, a página e o atendimento juntos: atrair o público certo, convencer com uma boa página e não deixar nenhum contato sem resposta.</p></details>
       <details><summary>Como faço para contratar?</summary><p>Clique em qualquer botão de WhatsApp desta página, responda algumas perguntas rápidas e você será direcionado para conversar comigo. Ou, se preferir, preencha o formulário no final da página.</p></details>
+    </div>
+    <div class="center" style="margin-top:40px">
+      <p style="font-weight:700;margin-bottom:14px">Ainda ficou com alguma dúvida?</p>
+      <button class="btn btn-wa" data-lead="faq" type="button"><svg aria-hidden="true"><use href="#i-wa"/></svg>Tire suas dúvidas no WhatsApp</button>
     </div>
   </div>
 </section>
@@ -664,11 +704,6 @@ section{padding:88px 0}
 <button class="wa-float" data-lead="flutuante" type="button" aria-label="Falar no WhatsApp">
   <svg aria-hidden="true"><use href="#i-wa"/></svg><span class="tip">Fale comigo no WhatsApp</span>
 </button>
-
-<!-- Barra fixa mobile -->
-<div class="mobile-bar">
-  <button class="btn btn-wa" data-lead="barra-mobile" type="button"><svg aria-hidden="true"><use href="#i-wa"/></svg>Diagnóstico gratuito no WhatsApp</button>
-</div>
 
 <!-- POPUP DE QUALIFICAÇÃO -->
 <div class="modal" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadTitle" aria-hidden="true">
