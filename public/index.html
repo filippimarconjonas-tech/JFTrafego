@@ -105,11 +105,15 @@ section{padding:88px 0}
 .platforms{background:var(--grad);color:#fff;padding:26px 0}
 .platforms .container{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:space-between}
 .platforms p{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;max-width:220px;opacity:.9}
-.platforms ul{list-style:none;display:flex;gap:12px;flex-wrap:wrap}
-.platforms li{background:#fff;border-radius:10px;height:48px;padding:0 10px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(11,60,110,.15)}
-.platforms li img{height:40px;width:auto}
-.platforms li.gmn{gap:8px;padding:0 14px;color:#5f6368;font-weight:700;font-size:.92rem;white-space:nowrap}
-.platforms li.gmn svg{width:26px;height:26px}
+.marquee{flex:1;min-width:0;overflow:hidden}
+.platforms ul{list-style:none;display:flex;gap:10px 28px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.platforms li{height:48px;display:flex;align-items:center;justify-content:center}
+.platforms li img{height:38px;width:auto;filter:brightness(0) invert(1)}
+.platforms li svg.ig{width:26px;height:26px;color:#fff;margin-right:2px}
+.platforms li.gmn{gap:8px;color:#fff;font-weight:700;font-size:.95rem;white-space:nowrap}
+.platforms li.gmn svg{width:28px;height:28px}
+.platforms li.dup{display:none}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* Dores */
 .pain .container{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
@@ -138,6 +142,11 @@ section{padding:88px 0}
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .2s,box-shadow .2s,border-color .2s}
 .card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#cbe6fb}
 .card .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--grad);color:#fff;margin-bottom:18px}
+.services .card{padding:0;overflow:hidden}
+.card-img{position:relative;aspect-ratio:16/9;background:var(--grad)}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card-img .ic{position:absolute;left:24px;bottom:-26px;margin:0;border:4px solid #fff;box-sizing:content-box;width:48px;height:48px}
+.card-body{padding:40px 26px 26px}
 .card .ic svg{width:26px;height:26px}
 .card h3{font-size:1.15rem;margin-bottom:8px}
 .card p{color:var(--ink-2);font-size:.95rem}
@@ -180,8 +189,11 @@ section{padding:88px 0}
 
 /* Sobre */
 .about .container{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:center}
-.about-photo{position:relative}
-.about-photo img{position:relative;width:100%;height:auto}
+.about-photo{position:relative;padding:0 0 0 18px}
+.about-photo::before{content:"";position:absolute;left:0;top:18px;right:18px;bottom:-18px;border-radius:28px;background:var(--grad);opacity:.9}
+.about-photo img{position:relative;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:center 20%;border-radius:28px;box-shadow:var(--shadow-lg)}
+.about-badge{position:absolute;right:-10px;bottom:36px;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 14px 34px rgba(15,27,45,.16);font-size:.85rem;line-height:1.3}
+.about-badge b{display:block;font-size:1rem;color:var(--blue-600)}
 .creds{list-style:none;display:grid;gap:10px;margin:22px 0 28px}
 .creds li{display:flex;gap:12px;align-items:center;font-weight:600}
 .creds li::before{content:"✓";width:24px;height:24px;flex:none;border-radius:50%;background:var(--blue-50);color:var(--blue-600);display:grid;place-items:center;font-size:.75rem;font-weight:800}
@@ -283,7 +295,7 @@ section{padding:88px 0}
 /* Reveal */
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
 .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.wa-float{animation:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.wa-float{animation:none}.platforms ul{animation:none!important}.marquee{overflow-x:auto!important}.notif{animation:none}html{scroll-behavior:auto}}
 
 /* Responsivo */
 @media (max-width:980px){
@@ -293,7 +305,8 @@ section{padding:88px 0}
   .grid-3,.plans{grid-template-columns:1fr 1fr}
   .steps{grid-template-columns:1fr 1fr}
   .cta-box{grid-template-columns:1fr;padding:40px 28px}
-  .about-photo{max-width:420px}
+  .about-photo{max-width:420px;width:100%;margin:0 auto}
+  .about-badge{right:0}
 }
 @media (max-width:640px){
   section{padding:64px 0}
@@ -303,9 +316,8 @@ section{padding:88px 0}
   .header .btn{padding:10px 12px}
   .grid-3,.plans,.why-grid,.steps,.row-2,.choices{grid-template-columns:1fr}
   .hero-ctas .btn{width:100%}
-  .platforms .container{justify-content:center;text-align:center}
-  .platforms p{max-width:none}
-  .platforms ul{justify-content:center}
+  .platforms .container{justify-content:center;text-align:center;gap:16px}
+  .platforms p{max-width:none;font-size:.72rem}
   .form-card{padding:24px 20px}
   .modal-head{padding:22px 20px 0}
   .progress{margin:16px 20px 0}
@@ -315,9 +327,11 @@ section{padding:88px 0}
   .pain-list{grid-template-columns:1fr}
   .photo-wrap{padding:0 8px}
   .notif{font-size:.78rem;padding:8px 10px}
-  .platforms ul{gap:8px}
-  .platforms li{height:42px}
-  .platforms li img{height:34px}
+  .platforms .container{padding:0}
+  .marquee{flex:0 0 100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .platforms ul{flex-wrap:nowrap;justify-content:flex-start;gap:0;width:max-content;animation:marquee 16s linear infinite}
+  .platforms li,.platforms li.dup{display:flex;flex:0 0 auto;width:50vw}
+  .platforms li img{height:40px}
 }
 </style>
 </head>
@@ -389,13 +403,20 @@ section{padding:88px 0}
 <div class="platforms">
   <div class="container">
     <p>As maiores ferramentas trabalhando para você</p>
+    <div class="marquee">
     <ul>
-      <li><img src="assets/logo-instagram.webp" alt="Instagram" width="186" height="56" loading="lazy"></li>
+      <li><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg><img src="assets/logo-instagram-texto.webp" alt="Instagram" width="106" height="56" loading="lazy"></li>
       <li><img src="assets/logo-facebook.webp" alt="Facebook" width="186" height="56" loading="lazy"></li>
       <li><img src="assets/logo-google.webp" alt="Google" width="186" height="56" loading="lazy"></li>
       <li><img src="assets/logo-youtube.webp" alt="YouTube" width="186" height="56" loading="lazy"></li>
-      <li class="gmn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285f4" d="M3.273 1.636c-.736 0-1.363.492-1.568 1.16L0 9.272c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.65 1.35 3 3 3 1.664 0 3-1.336 3-3 0 1.664 1.336 3 3 3s3-1.336 3-3l-1.705-6.476a1.646 1.646 0 00-1.568-1.16zm8.729 9.326c-.604 1.063-1.703 1.81-3.002 1.81-1.304 0-2.398-.747-3-1.806-.604 1.06-1.702 1.806-3 1.806-.484 0-.944-.1-1.363-.277v8.232c0 .9.736 1.637 1.636 1.637h17.454c.9 0 1.636-.737 1.636-1.637v-8.232a3.48 3.48 0 01-1.363.277c-1.304 0-2.398-.746-3-1.804-.602 1.058-1.696 1.804-3 1.804-1.299 0-2.394-.75-2.998-1.81zm5.725 3.765c.808 0 1.488.298 2.007.782l-.859.859a1.623 1.623 0 00-1.148-.447c-.98 0-1.772.827-1.772 1.806 0 .98.792 1.807 1.772 1.807.882 0 1.485-.501 1.615-1.191h-1.615v-1.16h2.826c.035.196.054.4.054.613 0 1.714-1.147 2.931-2.88 2.931a3 3 0 010-6z"/></svg><span>Google Meu Negócio</span></li>
+      <li class="gmn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.273 1.636c-.736 0-1.363.492-1.568 1.16L0 9.272c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.65 1.35 3 3 3 1.664 0 3-1.336 3-3 0 1.664 1.336 3 3 3s3-1.336 3-3l-1.705-6.476a1.646 1.646 0 00-1.568-1.16zm8.729 9.326c-.604 1.063-1.703 1.81-3.002 1.81-1.304 0-2.398-.747-3-1.806-.604 1.06-1.702 1.806-3 1.806-.484 0-.944-.1-1.363-.277v8.232c0 .9.736 1.637 1.636 1.637h17.454c.9 0 1.636-.737 1.636-1.637v-8.232a3.48 3.48 0 01-1.363.277c-1.304 0-2.398-.746-3-1.804-.602 1.058-1.696 1.804-3 1.804-1.299 0-2.394-.75-2.998-1.81zm5.725 3.765c.808 0 1.488.298 2.007.782l-.859.859a1.623 1.623 0 00-1.148-.447c-.98 0-1.772.827-1.772 1.806 0 .98.792 1.807 1.772 1.807.882 0 1.485-.501 1.615-1.191h-1.615v-1.16h2.826c.035.196.054.4.054.613 0 1.714-1.147 2.931-2.88 2.931a3 3 0 010-6z"/></svg><span>Google Meu Negócio</span></li>
+      <li class="dup" aria-hidden="true"><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg><img src="assets/logo-instagram-texto.webp" alt="" width="106" height="56" loading="lazy"></li>
+      <li class="dup" aria-hidden="true"><img src="assets/logo-facebook.webp" alt="" width="186" height="56" loading="lazy"></li>
+      <li class="dup" aria-hidden="true"><img src="assets/logo-google.webp" alt="" width="186" height="56" loading="lazy"></li>
+      <li class="dup" aria-hidden="true"><img src="assets/logo-youtube.webp" alt="" width="186" height="56" loading="lazy"></li>
+      <li class="gmn dup" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.273 1.636c-.736 0-1.363.492-1.568 1.16L0 9.272c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.664 1.336 3 3 3a3 3 0 003-3c0 1.65 1.35 3 3 3 1.664 0 3-1.336 3-3 0 1.664 1.336 3 3 3s3-1.336 3-3l-1.705-6.476a1.646 1.646 0 00-1.568-1.16zm8.729 9.326c-.604 1.063-1.703 1.81-3.002 1.81-1.304 0-2.398-.747-3-1.806-.604 1.06-1.702 1.806-3 1.806-.484 0-.944-.1-1.363-.277v8.232c0 .9.736 1.637 1.636 1.637h17.454c.9 0 1.636-.737 1.636-1.637v-8.232a3.48 3.48 0 01-1.363.277c-1.304 0-2.398-.746-3-1.804-.602 1.058-1.696 1.804-3 1.804-1.299 0-2.394-.75-2.998-1.81zm5.725 3.765c.808 0 1.488.298 2.007.782l-.859.859a1.623 1.623 0 00-1.148-.447c-.98 0-1.772.827-1.772 1.806 0 .98.792 1.807 1.772 1.807.882 0 1.485-.501 1.615-1.191h-1.615v-1.16h2.826c.035.196.054.4.054.613 0 1.714-1.147 2.931-2.88 2.931a3 3 0 010-6z"/></svg><span>Google Meu Negócio</span></li>
     </ul>
+    </div>
   </div>
 </div>
 
@@ -434,40 +455,52 @@ section{padding:88px 0}
     </div>
     <div class="grid-3">
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-target"/></svg></div>
-        <h3>Gestão de Tráfego Pago</h3>
-        <p>Campanhas no Google Ads e Meta Ads para aparecer para quem procura o que você vende.</p>
-        <ul><li>Pesquisa, Display e YouTube</li><li>Instagram e Facebook Ads</li><li>Otimização contínua das campanhas</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Celular com aplicativos de redes sociais" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-target"/></svg></div></div>
+        <div class="card-body">
+          <h3>Gestão de Tráfego Pago</h3>
+          <p>Campanhas no Google Ads e Meta Ads para aparecer para quem procura o que você vende.</p>
+          <ul><li>Pesquisa, Display e YouTube</li><li>Instagram e Facebook Ads</li><li>Otimização contínua das campanhas</li></ul>
+        </div>
       </article>
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-layout"/></svg></div>
-        <h3>Criação de Landing Pages</h3>
-        <p>Páginas rápidas, responsivas e pensadas para converter visitantes em contatos.</p>
-        <ul><li>Copy persuasiva</li><li>Formulário e botão de WhatsApp</li><li>Otimizada para celular</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Notebook com site aberto" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-layout"/></svg></div></div>
+        <div class="card-body">
+          <h3>Criação de Landing Pages</h3>
+          <p>Páginas rápidas, responsivas e pensadas para converter visitantes em contatos.</p>
+          <ul><li>Copy persuasiva</li><li>Formulário e botão de WhatsApp</li><li>Otimizada para celular</li></ul>
+        </div>
       </article>
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-crm"/></svg></div>
-        <h3>CRM e Automação</h3>
-        <p>Integração da landing page com CRM para organizar, acompanhar e não perder nenhum lead.</p>
-        <ul><li>Funil de vendas visual</li><li>Leads entram automaticamente</li><li>Mensagens e follow-up automáticos</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Painel de vendas e funil no computador" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-crm"/></svg></div></div>
+        <div class="card-body">
+          <h3>CRM e Automação</h3>
+          <p>Integração da landing page com CRM para organizar, acompanhar e não perder nenhum lead.</p>
+          <ul><li>Funil de vendas visual</li><li>Leads entram automaticamente</li><li>Mensagens e follow-up automáticos</li></ul>
+        </div>
       </article>
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-chart"/></svg></div>
-        <h3>Rastreamento e Análise de Dados</h3>
-        <p>Pixel, Google Tag Manager e conversões configurados para saber exatamente o que gera venda.</p>
-        <ul><li>Meta Pixel e API de Conversões</li><li>Google Analytics 4 e Tag Manager</li><li>Relatórios claros de resultado</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Gráficos de resultados de campanhas" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-chart"/></svg></div></div>
+        <div class="card-body">
+          <h3>Rastreamento e Análise de Dados</h3>
+          <p>Pixel, Google Tag Manager e conversões configurados para saber exatamente o que gera venda.</p>
+          <ul><li>Meta Pixel e API de Conversões</li><li>Google Analytics 4 e Tag Manager</li><li>Relatórios claros de resultado</li></ul>
+        </div>
       </article>
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-pen"/></svg></div>
-        <h3>Planejamento Estratégico</h3>
-        <p>Definição de público, oferta e posicionamento antes de investir o primeiro real.</p>
-        <ul><li>Análise de concorrentes</li><li>Definição de público e oferta</li><li>Plano de investimento</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Equipe planejando estratégia" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-pen"/></svg></div></div>
+        <div class="card-body">
+          <h3>Planejamento Estratégico</h3>
+          <p>Definição de público, oferta e posicionamento antes de investir o primeiro real.</p>
+          <ul><li>Análise de concorrentes</li><li>Definição de público e oferta</li><li>Plano de investimento</li></ul>
+        </div>
       </article>
       <article class="card reveal">
-        <div class="ic"><svg><use href="#i-users"/></svg></div>
-        <h3>Google Meu Negócio</h3>
-        <p>Perfil da empresa otimizado para aparecer no Google Maps e nas buscas da sua região.</p>
-        <ul><li>Otimização do perfil</li><li>Mais ligações e rotas</li><li>Estratégia de avaliações</li></ul>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&amp;fit=crop&amp;w=700&amp;h=394&amp;q=70" alt="Mapa no celular mostrando empresas da região" loading="lazy" onerror="this.remove()"><div class="ic"><svg><use href="#i-users"/></svg></div></div>
+        <div class="card-body">
+          <h3>Google Meu Negócio</h3>
+          <p>Perfil da empresa otimizado para aparecer no Google Maps e nas buscas da sua região.</p>
+          <ul><li>Otimização do perfil</li><li>Mais ligações e rotas</li><li>Estratégia de avaliações</li></ul>
+        </div>
       </article>
     </div>
     <div class="center" style="margin-top:40px">
@@ -575,7 +608,8 @@ section{padding:88px 0}
 <section class="about">
   <div class="container">
     <div class="about-photo reveal">
-      <img src="assets/jonas-filippi.webp" alt="Jonas Filippi, gestor de tráfego" width="513" height="400" loading="lazy">
+      <img src="assets/jonas-filippi.webp" alt="Jonas Filippi, gestor de tráfego" width="800" height="1261" loading="lazy">
+      <div class="about-badge"><b>Google &amp; Meta Ads</b>Gestor de tráfego</div>
     </div>
     <div class="reveal">
       <span class="eyebrow">Quem sou eu</span>
